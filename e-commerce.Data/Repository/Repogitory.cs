@@ -1,5 +1,6 @@
 ﻿using e_commerce.Data.Context;
 using e_commerce.Domain.Interfaces;
+using e_commerce.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,40 @@ namespace e_commerce.Data.Repository
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<Product>> GetProductsInCategoryAsync(int categoryId)
+        {
+            return await _context.Products.Include(p => p.Category).Where(product => product.CategoryId == categoryId).ToListAsync();
+        }
+
+        public async Task<List<Product>> GetProductsSortedByPriceAsync(bool ascending = true)
+        {
+            var query = _context.AsQueryable();
+            if (ascending)
+            {
+                query = query.OrderBy(product => product.Price);
+            }
+            else
+            {
+                query = query.OrderByDescending(product => product.Price);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsSortedByNameAsync(bool ascending = true)
+        {
+            var query = _dbSet.AsQueryable();
+            if (ascending)
+            {
+                query = query.OrderBy(product => product.Name);
+            }
+            else
+            {
+                query = query.OrderByDescending(product => product.Name);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }
