@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1 class="text-center text-primary">Product List</h1>
+<h1 class="text-center text-success">Product List</h1>
 <div class="d-flex justify-content-center">
     <hr class="w-25" />
 </div>
@@ -13,17 +13,26 @@
     <a asp-action="Create" class="btn btn-sm btn-primary"><i class="fa-solid fa-circle-plus"></i> Create New</a>
  </p>
 <partial name="_Notification"></partial>
-<table class="table table-hover mb-5 table-bordered table-striped">
+
+<form id="filterForm" asp-action="Index" method="get">
+    <label for="inputCategoryId">Enter Category Id:</label><br />
+    <input type="number" id="inputCategoryId" name="categoryId" class="form-control w-25 d-lg-inline-flex" aria-label="Small">
+    <button type="submit" class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+</form>
+<table class="table table-hover mb-5 table-bordered table-striped mt-3">
     <thead>
         <tr class="table-dark text-center">
             <th>
                 S.No.
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+               <a class="text-decoration-none text-white" asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParam"]">Name</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                <a class="text-decoration-none text-white" asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParam"]">Price</a>
+            </th>
+            <th>
+                CategoryId
             </th>
             <th>Actions</th>
         </tr>
@@ -40,6 +49,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryId)
+                </td>
             <td>
                     <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-warning"><i class="fa-solid fa-pen-to-square"></i> Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-info"><i class="fa-solid fa-circle-info"></i> Details</a> |
@@ -50,7 +62,9 @@
     </tbody>
 </table>
 
+
 @section Scripts{
+       
     <script>
         $(document).ready(function () {
             $(document).on("click", ".delete-Item", function () {
@@ -94,5 +108,6 @@
                 })
             })
         })
+
     </script>
     }
