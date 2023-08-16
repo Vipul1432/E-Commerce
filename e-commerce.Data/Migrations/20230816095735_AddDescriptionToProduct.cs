@@ -15,7 +15,7 @@ namespace e_commerce.Data.Migrations
                 table: "Products",
                 type: "nvarchar(250)",
                 maxLength: 250,
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
         }
 

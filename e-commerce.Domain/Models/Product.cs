@@ -19,7 +19,7 @@ namespace e_commerce.Domain.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
         [MaxLength(250)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
     }
