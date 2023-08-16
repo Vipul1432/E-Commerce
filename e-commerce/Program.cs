@@ -1,5 +1,9 @@
 using e_commerce.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using e_commerce.Data;
+using e_commerce.Data.Repository;
+using e_commerce.Domain.Interfaces;
 
 namespace e_commerce
 {
@@ -8,6 +12,8 @@ namespace e_commerce
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             // Add services to the container.
             builder.Services.AddDbContextPool<ApplicationDbContext>(options =>

@@ -1,0 +1,98 @@
+﻿@model IEnumerable<e_commerce.Domain.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-center text-primary">Product List</h1>
+<div class="d-flex justify-content-center">
+    <hr class="w-25" />
+</div>
+
+<p>
+    <a asp-action="Create" class="btn btn-sm btn-primary"><i class="fa-solid fa-circle-plus"></i> Create New</a>
+ </p>
+<partial name="_Notification"></partial>
+<table class="table table-hover mb-5 table-bordered table-striped">
+    <thead>
+        <tr class="table-dark text-center">
+            <th>
+                S.No.
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr class="text-center">
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-warning"><i class="fa-solid fa-pen-to-square"></i> Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-info"><i class="fa-solid fa-circle-info"></i> Details</a> |
+                    <a data-id="@item.ProductId" class="btn btn-sm btn-danger delete-Item"><i class="fa-solid fa-trash-can"></i> Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", ".delete-Item", function () {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't delete this record?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: "@Url.Content("~/Products/Delete")",
+                            method: "POST",
+                            data: { id: $(this).data("id") },
+                            success: function (data) {
+                                if (data) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'Your record has been deleted.',
+                                        'success'
+                                    )
+                                    location.reload();
+                                }
+                            },
+                            error: function (err) {
+                                Swal.fire(
+                                    'Opps!',
+                                    'Something went wrong!',
+                                    'error'
+                                )
+                            }
+
+                        })
+
+                    }
+                })
+            })
+        })
+    </script>
+    }
