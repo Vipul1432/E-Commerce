@@ -14,5 +14,6 @@ namespace e_commerce.Domain.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }
