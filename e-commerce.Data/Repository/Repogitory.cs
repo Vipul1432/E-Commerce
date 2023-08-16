@@ -65,7 +65,7 @@ namespace e_commerce.Data.Repository
 
         public async Task<List<Product>> GetProductsSortedByPriceAsync(bool ascending = true)
         {
-            var query = _context.AsQueryable();
+            var query = _context.Products.AsQueryable();
             if (ascending)
             {
                 query = query.OrderBy(product => product.Price);
@@ -80,7 +80,7 @@ namespace e_commerce.Data.Repository
 
         public async Task<IEnumerable<Product>> GetProductsSortedByNameAsync(bool ascending = true)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _context.Products.AsQueryable();
             if (ascending)
             {
                 query = query.OrderBy(product => product.Name);
