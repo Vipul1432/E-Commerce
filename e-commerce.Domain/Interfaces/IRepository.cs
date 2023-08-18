@@ -49,6 +49,6 @@ namespace e_commerce.Domain.Interfaces
         /// it return IQueriable of Product from database
         /// </summary>
         /// <returns></returns>
-        IQueryable<Product> GetAllProductAsync();
+        IQueryable<Product> GetAllProduct();
     }
 }
