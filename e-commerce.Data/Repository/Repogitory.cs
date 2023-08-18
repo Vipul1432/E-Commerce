@@ -97,7 +97,7 @@ namespace e_commerce.Data.Repository
         /// it return IQueriable of Product from database
         /// </summary>
         /// <returns></returns>
-        public IQueryable<Product> GetAllProductAsync()
+        public IQueryable<Product> GetAllProduct()
         {
             return _context.Products;
         }

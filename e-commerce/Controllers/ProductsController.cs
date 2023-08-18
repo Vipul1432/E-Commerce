@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using e_commerce.Domain.Interfaces;
+using e_commerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using e_commerce.Data;
-using e_commerce.Domain.Models;
-using e_commerce.Domain.Interfaces;
-using Microsoft.Data.SqlClient;
-using System.Security.Principal;
 
 namespace e_commerce.Controllers
 {
@@ -24,15 +17,15 @@ namespace e_commerce.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder, int? categoryId)
+        public IActionResult Index(string sortOrder, int? categoryId)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParam"] = sortOrder == "name" ? "name_desc" : "name";
             ViewData["PriceSortParam"] = sortOrder == "price" ? "price_desc" : "price";
 
-            var products = _productRepository.GetAllProductAsync();
+            IQueryable<Product> products = _productRepository.GetAllProduct();
             // finding product category by categoryId
-            if(categoryId != null)
+            if (categoryId != null)
             {
                 products = products.Where(products => products.CategoryId == categoryId);
             }
@@ -90,16 +83,18 @@ namespace e_commerce.Controllers
         [HttpPost]
         [Route("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,Name,Price")] Product product)
-         {
+        public async Task<IActionResult> Create([Bind("Name,Price, CategoryId")] Product product)
+        {
             if (ModelState.IsValid)
             {
-                bool isAdded  = await _productRepository.AddAsync(product);
-                if(isAdded)
+                bool isAdded = await _productRepository.AddAsync(product);
+                if (isAdded)
                     TempData["success"] = $"Product {product.Name} Added Successfully";
+                else
+                    TempData["error"] = $"{product.Name} can't added try again!!!";
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View();
         }
 
         // GET: Products/Edit/5
@@ -112,7 +107,7 @@ namespace e_commerce.Controllers
                 return RedirectToAction(nameof(Index));
             }
             else
-            {     
+            {
                 Product product = await _productRepository.GetByIdAsync(id ?? 1);
                 List<Category> categories = await _productRepository.GetAllCategory();
                 List<SelectListItem> CategoryList = categories.Select(x => new SelectListItem
@@ -123,27 +118,29 @@ namespace e_commerce.Controllers
                 }).ToList();
                 ViewBag.CategoryList = CategoryList;
                 return View(product);
-            }                      
+            }
         }
 
         // POST: Products/Edit/5
         [HttpPost]
         [Route("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,Price, CategoryId")] Product product)
         {
-            if (id != product.ProductId)
-            {
-                return RedirectToAction("Index");
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                   bool IsAdded = await _productRepository.UpdateAsync(product);
-                    if(IsAdded)
+                    Product existingproduct = await _productRepository.GetByIdAsync(id);
+                    existingproduct.Name = product.Name;
+                    existingproduct.Price = product.Price;
+                    existingproduct.Description = product.Description;
+                    existingproduct.CategoryId = product.CategoryId;
+                    bool IsAdded = await _productRepository.UpdateAsync(existingproduct);
+                    if (IsAdded)
                         TempData["success"] = "Category Updated Successfully";
+                    else
+                        TempData["error"] = $"{existingproduct.Name} can't updated try again!!!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,6 +158,10 @@ namespace e_commerce.Controllers
         {
             Product product = await _productRepository.GetByIdAsync(id);
             bool IsDeleted = await _productRepository.RemoveAsync(product);
+            if (IsDeleted)
+                TempData["success"] = $"{product.Name} Deleted Successfully";
+            else
+                TempData["error"] = $"{product.Name} can't deleted try again!!!";
             return IsDeleted;
         }
     }
